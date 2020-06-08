@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useRef } from "react"
+import "./app.scss"
+import { Modal } from "./components/modal/modal"
+import { Form } from "./components/form/form"
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [shouldShowModal, setShouldShowModal] = useState(false)
+	const modalRef = useRef<HTMLDivElement>(null)
+	// const mainRef = useRef<HTMLDivElement>(null)
+
+	const toggleModal = () => {
+		setShouldShowModal(!shouldShowModal)
+	}
+
+	return (
+		<div tabIndex={0}>
+			<div className='main'>
+				<h1>Accessible Modal Demo</h1>
+				<div role='button' tabIndex={-1}>
+					<button
+						onClick={() => setShouldShowModal(!shouldShowModal)}
+					>
+						Open Modal
+					</button>
+				</div>
+			</div>
+
+			<Modal
+				open={shouldShowModal}
+				onClose={() => setShouldShowModal(false)}
+				toggleModal={() => setShouldShowModal(false)}
+				innerRef={modalRef}
+			>
+				<Form onClose={toggleModal} />
+			</Modal>
+		</div>
+	)
 }
 
-export default App;
+export default App
