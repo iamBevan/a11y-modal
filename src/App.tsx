@@ -26,6 +26,10 @@ function App() {
 					<Form onClose={toggleModal} />
 				</Modal>
 				<div role='button' tabIndex={0}>
+					<p>
+						Click the button below to open a focus locked aria
+						modal.
+					</p>
 					<button
 						onClick={() => setShouldShowModal(!shouldShowModal)}
 					>
