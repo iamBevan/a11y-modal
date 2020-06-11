@@ -3,6 +3,15 @@ import { createPortal } from "react-dom"
 import styles from "./modal.module.scss"
 import FocusLock from "react-focus-lock"
 
+interface ModalProps {
+	toggleModal: () => void
+	children: ReactNode
+	onClose: () => void
+	open: boolean
+	innerRef: RefObject<HTMLDivElement>
+	ariaLabel: string
+}
+
 const modalRoot = document.body
 
 const Modal = ({
@@ -10,13 +19,8 @@ const Modal = ({
 	open,
 	toggleModal,
 	innerRef,
-}: {
-	toggleModal: () => void
-	children: ReactNode
-	onClose: () => void
-	open: boolean
-	innerRef: RefObject<HTMLDivElement>
-}) => {
+	ariaLabel,
+}: ModalProps) => {
 	const container = useRef<HTMLDivElement>(document.createElement("div"))
 	const currentContainer = container.current
 
@@ -56,7 +60,7 @@ const Modal = ({
 							className={styles["modal"]}
 							aria-modal='true'
 							role='dialog'
-							aria-label='credit card payment modal'
+							aria-label={ariaLabel}
 							ref={innerRef}
 							tabIndex={0}
 						>

@@ -22,6 +22,7 @@ function App() {
 					onClose={() => setShouldShowModal(false)}
 					toggleModal={() => setShouldShowModal(false)}
 					innerRef={modalRef}
+					ariaLabel={"credit card payment modal"}
 				>
 					<Form onClose={toggleModal} />
 				</Modal>
