@@ -246,7 +246,6 @@ const Form: React.FC<FormProps> = (props) => {
 					className={styles["cancel"]}
 					onClick={(e) => {
 						e.preventDefault()
-						console.log("Close")
 						props.onClose()
 					}}
 				>
