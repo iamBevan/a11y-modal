@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import "./index.scss"
-import App from "./app"
+import App from "./App"
 import axe from "react-axe"
 
 if (process.env.NODE_ENV !== "production") {
