@@ -11,19 +11,18 @@
 
 	.modal-body {
 		background-color: #f0f0f0;
-		width: 600px;
+		width: 60rem;
 
 		.modal-heading {
 			display: flex;
 			align-items: center;
 			background: white;
 			justify-content: center;
-			height: 50px;
+			height: 5rem;
 			border-bottom: 1px #a1a1a1 solid;
 
 			h1 {
-				font-size: 16px;
-				font-style: italic;
+				font-size: 1.6rem;
 				color: #646464;
 			}
 		}

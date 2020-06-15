@@ -1,5 +1,6 @@
 import React from "react"
 import { useForm } from "react-hook-form"
+import "./input.module.scss"
 
 interface InputProps {
 	type?: string

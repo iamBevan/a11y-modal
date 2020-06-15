@@ -7,7 +7,7 @@ interface ModalProps {
 	toggleModal: () => void
 	children: ReactNode
 	onClose: () => void
-	open: boolean
+	isModalOpen: boolean
 	innerRef: RefObject<HTMLDivElement>
 	ariaLabel: string
 }
@@ -16,7 +16,7 @@ const modalRoot = document.body
 
 const Modal = ({
 	children,
-	open,
+	isModalOpen,
 	toggleModal,
 	innerRef,
 	ariaLabel,
@@ -25,14 +25,14 @@ const Modal = ({
 	const currentContainer = container.current
 
 	useEffect(() => {
-		if (open) {
+		if (isModalOpen) {
 			modalRoot.appendChild(currentContainer)
 		}
 
 		return () => {
 			currentContainer.parentNode?.removeChild(currentContainer)
 		}
-	}, [currentContainer, open])
+	}, [currentContainer, isModalOpen])
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,7 +41,7 @@ const Modal = ({
 			}
 		}
 
-		if (open) {
+		if (isModalOpen) {
 			document.addEventListener("keydown", handleKeyDown)
 			return () => {
 				document.removeEventListener("keydown", handleKeyDown)
@@ -49,12 +49,12 @@ const Modal = ({
 		}
 
 		return
-	}, [open, toggleModal])
+	}, [isModalOpen, toggleModal])
 
 	const Wrapper = (): JSX.Element => {
 		return (
 			<>
-				{open && (
+				{isModalOpen && (
 					<FocusLock>
 						<div
 							className={styles["modal"]}
@@ -64,7 +64,7 @@ const Modal = ({
 							ref={innerRef}
 							tabIndex={0}
 						>
-							<div className={styles["modal-body"]} tabIndex={-1}>
+							<div className={styles["modal-body"]}>
 								<div
 									className={styles["modal-heading"]}
 									role='main'

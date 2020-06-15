@@ -4,7 +4,7 @@ import styles from "./form.module.scss"
 import { Input } from "../input/input"
 import { Label } from "../label/label"
 import { useForm } from "react-hook-form"
-// import { AccessibleDatePicker } from "./accessibleDatePicker"
+import { Button } from "../button/button"
 
 interface FormData {
 	forename: string
@@ -190,12 +190,12 @@ const Form: React.FC<FormProps> = (props) => {
 							errorText={errors.expiryDate && "Required"}
 						/>
 						<Input
+							type={"date"}
 							name={"expiryDate"}
 							innerRef={register({
 								required: "Required",
 							})}
 						/>
-						{/* <AccessibleDatePicker /> */}
 					</div>
 				</div>
 				<div
@@ -241,16 +241,16 @@ const Form: React.FC<FormProps> = (props) => {
 				role='main'
 				aria-labelledby='Footer'
 			>
-				<button type='submit'>Submit</button>
-				<button
-					className={styles["cancel"]}
-					onClick={(e) => {
-						e.preventDefault()
-						props.onClose()
-					}}
-				>
-					Cancel
-				</button>
+				<Button
+					type='submit'
+					text='Submit'
+					onClick={() => console.log("Form submitted")}
+				/>
+				<Button
+					onClick={() => props.onClose()}
+					text='Cancel'
+					type='button'
+				/>
 			</div>
 		</form>
 	)

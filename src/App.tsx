@@ -18,7 +18,7 @@ function App() {
 			</header>
 			<div className='main' role='main'>
 				<Modal
-					open={shouldShowModal}
+					isModalOpen={shouldShowModal}
 					onClose={() => setShouldShowModal(false)}
 					toggleModal={() => setShouldShowModal(false)}
 					innerRef={modalRef}
@@ -26,7 +26,7 @@ function App() {
 				>
 					<Form onClose={toggleModal} />
 				</Modal>
-				<div role='button' tabIndex={0}>
+				<div>
 					<p>
 						Click the button below to open a focus locked aria
 						modal.

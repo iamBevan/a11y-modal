@@ -1,0 +1,50 @@
+//Colours
+$focus: #8859b6; //Passes WCAG AA - Graphical Objects and User Interface Components
+
+input[type="text"] {
+	outline: none;
+	border: 1px solid #dddddd;
+	width: 100%;
+	padding: 1.2rem 2rem;
+	margin: 0.8rem 0;
+	display: inline-block;
+	border-radius: 0.4rem;
+	box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+	box-shadow: 0 0 0.5rem $focus;
+	border: 1px solid $focus;
+}
+
+input[type="date"] {
+	outline: none;
+	border: 1px solid #dddddd;
+	width: 100%;
+	padding: 0.9rem 2rem;
+	margin: 0.8rem 0;
+	display: inline-block;
+	border-radius: 0.4rem;
+	box-sizing: border-box;
+}
+
+input[type="date"]::-webkit-clear-button {
+	font-size: 1.8rem;
+	height: 3rem;
+	position: relative;
+}
+
+input[type="date"]:focus {
+	box-shadow: 0 0 0.5rem $focus;
+	border: 1px solid $focus;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+	border: 1px solid transparent;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:focus {
+	box-shadow: 0 0 0.5rem $focus;
+	border: 1px solid $focus;
+	outline: none;
+}
