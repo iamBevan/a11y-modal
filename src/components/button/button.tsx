@@ -11,12 +11,9 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = (props) => {
 	return (
 		<button
-			type={props.type ?? "button"}
+			type={props.type}
 			className={props.type !== "submit" ? styles["cancel"] : ""}
-			onClick={(e) => {
-				e.preventDefault()
-				props.onClick()
-			}}
+			onClick={props.onClick}
 		>
 			{props.text}
 		</button>
