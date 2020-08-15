@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, RefObject } from "react"
+import React, { ReactNode, useEffect, useRef, RefObject, useState } from "react"
 import { createPortal } from "react-dom"
 import styles from "./modal.module.scss"
 import FocusLock from "react-focus-lock"
@@ -23,10 +23,64 @@ const Modal = ({
 }: ModalProps) => {
 	const container = useRef<HTMLDivElement>(document.createElement("div"))
 	const currentContainer = container.current
+	const [elements, setElements] = useState<Element[]>()
+
+	useEffect(() => {
+		function getKeyboardFocusableElements(element = document): Element[] {
+			return Array.from(
+				element.querySelectorAll(
+					'a, button, input, textarea, select, details,[tabindex]:not([tabindex="-1"])'
+				)
+			).filter(el => !el.hasAttribute("disabled"))
+		}
+
+		const elements = getKeyboardFocusableElements()
+
+		setElements(elements)
+	}, [])
+
+	useEffect(() => {
+		if (elements) {
+			for (const element of elements) {
+				element.setAttribute("tabindex", "-1")
+			}
+		}
+	}, [elements])
 
 	useEffect(() => {
 		if (isModalOpen) {
 			modalRoot.appendChild(currentContainer)
+
+			const modalElements: Element[] = Array.from(
+				container.current.querySelectorAll(
+					'a, button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
+				)
+			).filter(el => !el.hasAttribute("disabled"))
+
+			const firstEl = modalElements[0] as HTMLElement
+			const lastEl = modalElements[
+				modalElements.length - 1
+			] as HTMLElement
+
+			const handleKeyDown = (e: KeyboardEvent) => {
+				e.preventDefault()
+
+				if (e.key === "Tab") {
+					;(modalElements[0] as HTMLElement).focus()
+				}
+			}
+
+			firstEl.focus()
+			lastEl.onfocus = function () {
+				currentContainer.addEventListener("keydown", handleKeyDown)
+			}
+
+			console.log("lastel", lastEl)
+			lastEl.onblur = function () {
+				currentContainer.removeEventListener("keydown", handleKeyDown)
+			}
+
+			console.log("lastel", lastEl)
 		}
 
 		return () => {
@@ -55,14 +109,13 @@ const Modal = ({
 		return (
 			<>
 				{isModalOpen && (
-					<FocusLock>
+					<>
 						<div
 							className={styles["modal"]}
 							aria-modal='true'
 							role='dialog'
 							aria-label={ariaLabel}
 							ref={innerRef}
-							tabIndex={0}
 						>
 							<div className={styles["modal-body"]}>
 								<div
@@ -75,7 +128,7 @@ const Modal = ({
 								{children}
 							</div>
 						</div>
-					</FocusLock>
+					</>
 				)}
 			</>
 		)
