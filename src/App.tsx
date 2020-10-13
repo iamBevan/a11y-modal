@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react"
 import "./app.scss"
 import { Modal } from "./components/modal/modal"
 import { Form } from "./components/form/form"
-import useKeyboardShortcut from "./hooks/useKeyboardShortcut"
+import { useKeyboardShortcut } from "./hooks/useKeyboardShortcut"
 function App() {
 	const [shouldShowModal, setShouldShowModal] = useState(false)
 	const modalRef = useRef<HTMLDivElement>(null)

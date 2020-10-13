@@ -1,13 +1,19 @@
 import { useEffect, useCallback, useReducer } from "react";
 
+type ActionType = "set-key-down" | "set-key-up"
+
+interface State {
+    [key: string]: boolean
+}
+
 interface Action {
-    type: string
+    type: ActionType
     key: string
 }
 
 const blacklistedTargets = ["INPUT", "TEXTAREA"];
 
-const keysReducer = (state: any, action: Action) => {
+const keysReducer = (state: State, action: Action) => {
     switch (action.type) {
         case "set-key-down":
             return { ...state, [action.key]: true };
@@ -18,23 +24,23 @@ const keysReducer = (state: any, action: Action) => {
     }
 };
 
-const useKeyboardShortcut = (shortcutKeys: object, callback: (keys: string) => void) => {
+const useKeyboardShortcut = (shortcutKeys: string[], callback: () => void) => {
 
-    const initalKeyMapping = Array.isArray(shortcutKeys) && shortcutKeys.reduce((currentKeys, key) => {
-        currentKeys[key.toLowerCase()] = false;
-        console.log("currentKeyus", currentKeys)
-        return currentKeys;
-    }, {});
+    let initialKeys: { [key: string]: boolean } = {}
+    shortcutKeys.forEach((_key) => {
+        initialKeys[_key.toLowerCase()] = false
+    })
 
-    const [keys, setKeys] = useReducer(keysReducer, initalKeyMapping);
+    const [keys, setKeys] = useReducer(keysReducer, initialKeys);
 
     const keydownListener = useCallback(
-        keydownEvent => {
+        (keydownEvent: KeyboardEvent) => {
             const { key, target, repeat } = keydownEvent;
             const loweredKey = key.toLowerCase();
+            const targetElement = target as Element
 
             if (repeat) return;
-            if (blacklistedTargets.includes(target.tagName)) return;
+            if (blacklistedTargets.includes(targetElement.tagName)) return;
             if (keys[loweredKey] === undefined) return;
 
             if (keys[loweredKey] === false)
@@ -44,11 +50,12 @@ const useKeyboardShortcut = (shortcutKeys: object, callback: (keys: string) => v
     );
 
     const keyupListener = useCallback(
-        keyupEvent => {
+        (keyupEvent: KeyboardEvent) => {
             const { key, target } = keyupEvent;
             const loweredKey = key.toLowerCase();
+            const targetElement = target as Element
 
-            if (blacklistedTargets.includes(target.tagName)) return;
+            if (blacklistedTargets.includes(targetElement.tagName)) return;
             if (keys[loweredKey] === undefined) return;
 
             if (keys[loweredKey] === true)
@@ -60,7 +67,7 @@ const useKeyboardShortcut = (shortcutKeys: object, callback: (keys: string) => v
     useEffect(() => {
         let values = Object.keys(keys).map(e => keys[e])
 
-        if (values[0] && values[1]) callback(keys);
+        if (values[0] && values[1]) callback();
 
     }, [callback, keys]);
 
@@ -79,4 +86,4 @@ const useKeyboardShortcut = (shortcutKeys: object, callback: (keys: string) => v
     }, [keyupListener]);
 };
 
-export default useKeyboardShortcut;
+export { useKeyboardShortcut };
