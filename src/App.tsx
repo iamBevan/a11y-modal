@@ -1,15 +1,11 @@
-import React, { useState, useRef } from "react"
-import "./app.scss"
-import { Modal } from "./components/modal/modal"
-import { Form } from "./components/form/form"
+import React, { useState, useRef } from "react";
+import "./app.scss";
+import { Modal } from "./components/modal/modal";
+import { Form } from "./components/form/form";
 
 function App() {
-	const [shouldShowModal, setShouldShowModal] = useState(false)
-	const modalRef = useRef<HTMLDivElement>(null)
-
-	const toggleModal = () => {
-		setShouldShowModal(!shouldShowModal)
-	}
+	const [shouldShowModal, setShouldShowModal] = useState(false);
+	const modalRef = useRef<HTMLDivElement>(null);
 
 	return (
 		<>
@@ -38,7 +34,7 @@ function App() {
 				</div>
 			</div>
 		</>
-	)
+	);
 }
 
-export default App
+export default App;

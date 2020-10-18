@@ -1,17 +1,23 @@
-import React, { ReactNode, useEffect, useRef, RefObject, useState } from "react"
-import { createPortal } from "react-dom"
-import styles from "./modal.module.scss"
+import React, {
+	ReactNode,
+	useEffect,
+	useRef,
+	RefObject,
+	useState,
+} from "react";
+import { createPortal } from "react-dom";
+import styles from "./modal.module.scss";
 
 interface ModalProps {
-	children: ReactNode
-	onClose: () => void
-	isModalOpen: boolean
-	innerRef: RefObject<HTMLDivElement>
-	ariaLabel: string
+	children: ReactNode;
+	onClose: () => void;
+	isModalOpen: boolean;
+	innerRef: RefObject<HTMLDivElement>;
+	ariaLabel: string;
 }
 const elements =
-	'a, button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
-const modalRoot = document.body
+	'a, button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])';
+const modalRoot = document.body;
 
 const Modal = ({
 	children,
@@ -20,78 +26,78 @@ const Modal = ({
 	innerRef,
 	ariaLabel,
 }: ModalProps) => {
-	const container = useRef<HTMLDivElement>(document.createElement("div"))
-	const currentContainer = container.current
-	const [lastActive, setLastActive] = useState<Element | null>(null)
+	const container = useRef<HTMLDivElement>(document.createElement("div"));
+	const currentContainer = container.current;
+	const [lastActive, setLastActive] = useState<Element | null>(null);
 
 	useEffect(() => {
 		if (isModalOpen) {
-			if (document.activeElement) setLastActive(document.activeElement)
-			modalRoot.appendChild(currentContainer)
+			if (document.activeElement) setLastActive(document.activeElement);
+			modalRoot.appendChild(currentContainer);
 
 			const modalElements: Element[] = Array.from(
 				container.current.querySelectorAll(elements)
-			).filter(el => !el.hasAttribute("disabled"))
+			).filter(el => !el.hasAttribute("disabled"));
 
-			const firstEl = modalElements[0] as HTMLElement
+			const firstEl = modalElements[0] as HTMLElement;
 			const lastEl = modalElements[
 				modalElements.length - 1
-			] as HTMLElement
+			] as HTMLElement;
 
 			const lastElKeyDown = (e: KeyboardEvent) => {
 				if (!e.shiftKey && e.key === "Tab") {
-					e.preventDefault()
-					firstEl.focus()
+					e.preventDefault();
+					firstEl.focus();
 				}
-			}
+			};
 
 			const firstElKeyDown = (e: KeyboardEvent) => {
 				if (e.shiftKey && e.key === "Tab") {
-					e.preventDefault()
-					lastEl.focus()
+					e.preventDefault();
+					lastEl.focus();
 				}
-			}
+			};
 
-			firstEl.focus()
+			firstEl.focus();
 
 			firstEl.onfocus = () => {
-				currentContainer.addEventListener("keydown", firstElKeyDown)
-			}
+				currentContainer.addEventListener("keydown", firstElKeyDown);
+			};
 			firstEl.onblur = () => {
-				currentContainer.removeEventListener("keydown", firstElKeyDown)
-			}
+				currentContainer.removeEventListener("keydown", firstElKeyDown);
+			};
 			lastEl.onfocus = () => {
-				currentContainer.addEventListener("keydown", lastElKeyDown)
-			}
+				currentContainer.addEventListener("keydown", lastElKeyDown);
+			};
 			lastEl.onblur = () => {
-				currentContainer.removeEventListener("keydown", lastElKeyDown)
-			}
+				currentContainer.removeEventListener("keydown", lastElKeyDown);
+			};
 		}
 
 		return () => {
-			currentContainer.parentNode?.removeChild(currentContainer)
+			currentContainer.parentNode?.removeChild(currentContainer);
 			if (lastActive) {
-				;(lastActive as HTMLElement).focus()
+				(lastActive as HTMLElement).focus();
 			}
-		}
-	}, [currentContainer, isModalOpen])
+		};
+	}, [currentContainer, isModalOpen, lastActive]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
-				onClose()
+				onClose();
 			}
-		}
+		};
 
 		if (isModalOpen) {
-			document.addEventListener("keydown", handleKeyDown)
+			document.addEventListener("keydown", handleKeyDown);
 			return () => {
-				document.removeEventListener("keydown", handleKeyDown)
-			}
+				document.removeEventListener("keydown", handleKeyDown);
+			};
 		}
 
-		return
-	}, [isModalOpen])
+		return;
+	}, [isModalOpen, onClose]);
 
 	const Wrapper = (): JSX.Element => {
 		return (
@@ -119,10 +125,10 @@ const Modal = ({
 					</>
 				)}
 			</>
-		)
-	}
+		);
+	};
 
-	return createPortal(Wrapper(), currentContainer)
-}
+	return createPortal(Wrapper(), currentContainer);
+};
 
-export { Modal }
+export { Modal };
