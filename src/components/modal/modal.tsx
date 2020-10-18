@@ -43,6 +43,7 @@ const Modal = ({
 					firstEl.focus()
 				}
 			}
+
 			const firstElKeyDown = (e: KeyboardEvent) => {
 				if (e.shiftKey && e.key === "Tab") {
 					e.preventDefault()
