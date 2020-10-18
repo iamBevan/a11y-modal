@@ -4,6 +4,7 @@ import React, {
 	useRef,
 	RefObject,
 	useState,
+	useCallback,
 } from "react";
 import { createPortal } from "react-dom";
 import styles from "./modal.module.scss";
@@ -30,9 +31,18 @@ const Modal = ({
 	const currentContainer = container.current;
 	const [lastActive, setLastActive] = useState<Element | null>(null);
 
+	const returnFocus = useCallback(() => {
+		if (lastActive) {
+			(lastActive as HTMLElement).focus();
+		}
+	}, [lastActive]);
+
+	useEffect(() => {
+		if (document.activeElement) setLastActive(document.activeElement);
+	}, [isModalOpen]);
+
 	useEffect(() => {
 		if (isModalOpen) {
-			if (document.activeElement) setLastActive(document.activeElement);
 			modalRoot.appendChild(currentContainer);
 
 			const modalElements: Element[] = Array.from(
@@ -76,19 +86,19 @@ const Modal = ({
 
 		return () => {
 			currentContainer.parentNode?.removeChild(currentContainer);
-			if (lastActive) {
-				(lastActive as HTMLElement).focus();
-			}
+			returnFocus();
 		};
-	}, [currentContainer, isModalOpen, lastActive]);
+	}, [currentContainer, isModalOpen, lastActive, returnFocus]);
 
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent) => {
 			if (event.key === "Escape") {
 				onClose();
 			}
-		};
-
+		},
+		[onClose]
+	);
+	useEffect(() => {
 		if (isModalOpen) {
 			document.addEventListener("keydown", handleKeyDown);
 			return () => {
@@ -97,7 +107,7 @@ const Modal = ({
 		}
 
 		return;
-	}, [isModalOpen, onClose]);
+	}, [handleKeyDown, isModalOpen]);
 
 	const Wrapper = (): JSX.Element => {
 		return (
