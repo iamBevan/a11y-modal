@@ -4,7 +4,6 @@ import React, {
 	useRef,
 	RefObject,
 	useState,
-	useCallback,
 } from "react";
 import { createPortal } from "react-dom";
 import styles from "./modal.module.scss";
@@ -31,42 +30,47 @@ const Modal = ({
 	const currentContainer = container.current;
 	const [lastActive, setLastActive] = useState<Element | null>(null);
 
-	const returnFocus = useCallback(() => {
-		if (lastActive) {
-			(lastActive as HTMLElement).focus();
-		}
-	}, [lastActive]);
-
 	useEffect(() => {
 		if (document.activeElement) setLastActive(document.activeElement);
 	}, [isModalOpen]);
 
 	useEffect(() => {
+		const returnFocus = () => {
+			if (lastActive) {
+				(lastActive as HTMLElement).focus();
+			}
+		};
+
+		const modalElements: Element[] = Array.from(
+			container.current.querySelectorAll(elements)
+		).filter(el => !el.hasAttribute("disabled"));
+
+		const firstEl = modalElements[0] as HTMLElement;
+		const lastEl = modalElements[modalElements.length - 1] as HTMLElement;
+
+		const lastElKeyDown = (e: KeyboardEvent) => {
+			if (!e.shiftKey && e.key === "Tab") {
+				e.preventDefault();
+				firstEl.focus();
+			}
+		};
+		const firstElKeyDown = (e: KeyboardEvent) => {
+			if (e.shiftKey && e.key === "Tab") {
+				e.preventDefault();
+				lastEl.focus();
+			}
+		};
+
+		const handleEscapeKey = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				onClose();
+			}
+		};
+
 		if (isModalOpen) {
+			document.addEventListener("keydown", handleEscapeKey);
+
 			modalRoot.appendChild(currentContainer);
-
-			const modalElements: Element[] = Array.from(
-				container.current.querySelectorAll(elements)
-			).filter(el => !el.hasAttribute("disabled"));
-
-			const firstEl = modalElements[0] as HTMLElement;
-			const lastEl = modalElements[
-				modalElements.length - 1
-			] as HTMLElement;
-
-			const lastElKeyDown = (e: KeyboardEvent) => {
-				if (!e.shiftKey && e.key === "Tab") {
-					e.preventDefault();
-					firstEl.focus();
-				}
-			};
-
-			const firstElKeyDown = (e: KeyboardEvent) => {
-				if (e.shiftKey && e.key === "Tab") {
-					e.preventDefault();
-					lastEl.focus();
-				}
-			};
 
 			firstEl.focus();
 
@@ -82,32 +86,17 @@ const Modal = ({
 			lastEl.onblur = () => {
 				currentContainer.removeEventListener("keydown", lastElKeyDown);
 			};
+
+			return () => {
+				document.removeEventListener("keydown", handleEscapeKey);
+			};
 		}
 
 		return () => {
 			currentContainer.parentNode?.removeChild(currentContainer);
 			returnFocus();
 		};
-	}, [currentContainer, isModalOpen, lastActive, returnFocus]);
-
-	const handleKeyDown = useCallback(
-		(event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				onClose();
-			}
-		},
-		[onClose]
-	);
-	useEffect(() => {
-		if (isModalOpen) {
-			document.addEventListener("keydown", handleKeyDown);
-			return () => {
-				document.removeEventListener("keydown", handleKeyDown);
-			};
-		}
-
-		return;
-	}, [handleKeyDown, isModalOpen]);
+	}, [currentContainer, isModalOpen, lastActive, onClose]);
 
 	const Wrapper = (): JSX.Element => {
 		return (
