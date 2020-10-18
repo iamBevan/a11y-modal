@@ -1,9 +1,8 @@
-import React, { ReactNode, useEffect, useRef, RefObject } from "react"
+import React, { ReactNode, useEffect, useRef, RefObject, useState } from "react"
 import { createPortal } from "react-dom"
 import styles from "./modal.module.scss"
 
 interface ModalProps {
-	toggleModal: () => void
 	children: ReactNode
 	onClose: () => void
 	isModalOpen: boolean
@@ -17,15 +16,17 @@ const modalRoot = document.body
 const Modal = ({
 	children,
 	isModalOpen,
-	toggleModal,
+	onClose,
 	innerRef,
 	ariaLabel,
 }: ModalProps) => {
 	const container = useRef<HTMLDivElement>(document.createElement("div"))
 	const currentContainer = container.current
+	const [lastActive, setLastActive] = useState<Element | null>(null)
 
 	useEffect(() => {
 		if (isModalOpen) {
+			if (document.activeElement) setLastActive(document.activeElement)
 			modalRoot.appendChild(currentContainer)
 
 			const modalElements: Element[] = Array.from(
@@ -52,29 +53,33 @@ const Modal = ({
 			}
 
 			firstEl.focus()
-			firstEl.onfocus = function () {
+
+			firstEl.onfocus = () => {
 				currentContainer.addEventListener("keydown", firstElKeyDown)
 			}
-			firstEl.onblur = function () {
+			firstEl.onblur = () => {
 				currentContainer.removeEventListener("keydown", firstElKeyDown)
 			}
-			lastEl.onfocus = function () {
+			lastEl.onfocus = () => {
 				currentContainer.addEventListener("keydown", lastElKeyDown)
 			}
-			lastEl.onblur = function () {
+			lastEl.onblur = () => {
 				currentContainer.removeEventListener("keydown", lastElKeyDown)
 			}
 		}
 
 		return () => {
 			currentContainer.parentNode?.removeChild(currentContainer)
+			if (lastActive) {
+				;(lastActive as HTMLElement).focus()
+			}
 		}
 	}, [currentContainer, isModalOpen])
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
-				toggleModal()
+				onClose()
 			}
 		}
 
@@ -86,7 +91,7 @@ const Modal = ({
 		}
 
 		return
-	}, [isModalOpen, toggleModal])
+	}, [isModalOpen])
 
 	const Wrapper = (): JSX.Element => {
 		return (
