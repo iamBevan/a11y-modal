@@ -10,7 +10,8 @@ interface ModalProps {
 	innerRef: RefObject<HTMLDivElement>
 	ariaLabel: string
 }
-
+const elements =
+	'a, button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
 const modalRoot = document.body
 
 const Modal = ({
@@ -28,9 +29,7 @@ const Modal = ({
 			modalRoot.appendChild(currentContainer)
 
 			const modalElements: Element[] = Array.from(
-				container.current.querySelectorAll(
-					'a, button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
-				)
+				container.current.querySelectorAll(elements)
 			).filter(el => !el.hasAttribute("disabled"))
 
 			const firstEl = modalElements[0] as HTMLElement
@@ -38,20 +37,31 @@ const Modal = ({
 				modalElements.length - 1
 			] as HTMLElement
 
-			const handleKeyDown = (e: KeyboardEvent) => {
-				e.preventDefault()
-
-				if (e.key === "Tab") {
-					;(modalElements[0] as HTMLElement).focus()
+			const lastElKeyDown = (e: KeyboardEvent) => {
+				if (!e.shiftKey && e.key === "Tab") {
+					e.preventDefault()
+					firstEl.focus()
+				}
+			}
+			const firstElKeyDown = (e: KeyboardEvent) => {
+				if (e.shiftKey && e.key === "Tab") {
+					e.preventDefault()
+					lastEl.focus()
 				}
 			}
 
 			firstEl.focus()
+			firstEl.onfocus = function () {
+				currentContainer.addEventListener("keydown", firstElKeyDown)
+			}
+			firstEl.onblur = function () {
+				currentContainer.removeEventListener("keydown", firstElKeyDown)
+			}
 			lastEl.onfocus = function () {
-				currentContainer.addEventListener("keydown", handleKeyDown)
+				currentContainer.addEventListener("keydown", lastElKeyDown)
 			}
 			lastEl.onblur = function () {
-				currentContainer.removeEventListener("keydown", handleKeyDown)
+				currentContainer.removeEventListener("keydown", lastElKeyDown)
 			}
 		}
 
