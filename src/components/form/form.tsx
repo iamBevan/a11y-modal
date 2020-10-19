@@ -1,29 +1,29 @@
-import React from "react"
-import "./form.module.scss"
-import styles from "./form.module.scss"
-import { Input } from "../input/input"
-import { Label } from "../label/label"
-import { useForm } from "react-hook-form"
-import { Button } from "../button/button"
+import React from "react";
+import "./form.module.scss";
+import styles from "./form.module.scss";
+import { Input } from "../input/input";
+import { Label } from "../label/label";
+import { useForm } from "react-hook-form";
+import { Button } from "../button/button";
 
 interface FormData {
-	forename: string
-	surname: string
-	company: string
-	email: string
-	telephone: number
-	cardNumber: number
-	expiryDate: Date
-	nameOnCard: string
-	CVV: number
+	forename: string;
+	surname: string;
+	company: string;
+	email: string;
+	telephone: number;
+	cardNumber: number;
+	expiryDate: Date;
+	nameOnCard: string;
+	CVV: number;
 }
 
 interface FormProps {
-	onClose: () => void
+	onClose: () => void;
 }
 
-const Form: React.FC<FormProps> = (props) => {
-	const { register, handleSubmit, errors } = useForm<FormData>()
+const Form: React.FC<FormProps> = props => {
+	const { register, handleSubmit, errors } = useForm<FormData>();
 	const onSubmit = handleSubmit(
 		({
 			forename,
@@ -46,9 +46,9 @@ const Form: React.FC<FormProps> = (props) => {
 				expiryDate,
 				nameOnCard,
 				CVV
-			)
+			);
 		}
-	)
+	);
 
 	return (
 		<form onSubmit={onSubmit}>
@@ -228,6 +228,7 @@ const Form: React.FC<FormProps> = (props) => {
 							errorText={errors.CVV && "Required"}
 						/>
 						<Input
+							type='password'
 							name={"CVV"}
 							innerRef={register({
 								required: "Required",
@@ -253,7 +254,7 @@ const Form: React.FC<FormProps> = (props) => {
 				/>
 			</div>
 		</form>
-	)
-}
+	);
+};
 
-export { Form }
+export { Form };
