@@ -22,9 +22,9 @@ const modalRoot = document.body;
 const Modal = ({
 	children,
 	isModalOpen,
-	onClose,
 	innerRef,
 	ariaLabel,
+	onClose,
 }: ModalProps) => {
 	const container = useRef<HTMLDivElement>(document.createElement("div"));
 	const currentContainer = container.current;
@@ -35,12 +35,6 @@ const Modal = ({
 	}, [isModalOpen]);
 
 	useEffect(() => {
-		const returnFocus = () => {
-			if (lastActive) {
-				(lastActive as HTMLElement).focus();
-			}
-		};
-
 		const modalElements: Element[] = Array.from(
 			container.current.querySelectorAll(elements)
 		).filter(el => !el.hasAttribute("disabled"));
@@ -61,18 +55,18 @@ const Modal = ({
 			}
 		};
 
-		const handleEscapeKey = (event: KeyboardEvent) => {
+		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
 				onClose();
 			}
 		};
 
 		if (isModalOpen) {
-			document.addEventListener("keydown", handleEscapeKey);
-
 			modalRoot.appendChild(currentContainer);
 
 			firstEl.focus();
+
+			document.addEventListener("keydown", handleKeyDown);
 
 			firstEl.onfocus = () => {
 				currentContainer.addEventListener("keydown", firstElKeyDown);
@@ -86,17 +80,25 @@ const Modal = ({
 			lastEl.onblur = () => {
 				currentContainer.removeEventListener("keydown", lastElKeyDown);
 			};
-
-			return () => {
-				document.removeEventListener("keydown", handleEscapeKey);
-			};
 		}
 
 		return () => {
 			currentContainer.parentNode?.removeChild(currentContainer);
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [currentContainer, isModalOpen, onClose]);
+
+	useEffect(() => {
+		const returnFocus = () => {
+			if (lastActive) {
+				(lastActive as HTMLElement).focus();
+			}
+		};
+
+		return () => {
 			returnFocus();
 		};
-	}, [currentContainer, isModalOpen, lastActive, onClose]);
+	}, [lastActive]);
 
 	const Wrapper = (): JSX.Element => {
 		return (
