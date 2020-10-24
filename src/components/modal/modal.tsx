@@ -8,7 +8,7 @@ import React, {
 import { createPortal } from "react-dom";
 import styles from "./modal.module.scss";
 
-interface ModalProps {
+export interface ModalProps {
 	children: ReactNode;
 	onClose: () => void;
 	isModalOpen: boolean;
@@ -63,23 +63,33 @@ const Modal = ({
 
 		if (isModalOpen) {
 			modalRoot.appendChild(currentContainer);
-
-			firstEl.focus();
-
 			document.addEventListener("keydown", handleKeyDown);
 
-			firstEl.onfocus = () => {
-				currentContainer.addEventListener("keydown", firstElKeyDown);
-			};
-			firstEl.onblur = () => {
-				currentContainer.removeEventListener("keydown", firstElKeyDown);
-			};
-			lastEl.onfocus = () => {
-				currentContainer.addEventListener("keydown", lastElKeyDown);
-			};
-			lastEl.onblur = () => {
-				currentContainer.removeEventListener("keydown", lastElKeyDown);
-			};
+			if (firstEl) {
+				firstEl.focus();
+
+				firstEl.onfocus = () => {
+					currentContainer.addEventListener(
+						"keydown",
+						firstElKeyDown
+					);
+				};
+				firstEl.onblur = () => {
+					currentContainer.removeEventListener(
+						"keydown",
+						firstElKeyDown
+					);
+				};
+				lastEl.onfocus = () => {
+					currentContainer.addEventListener("keydown", lastElKeyDown);
+				};
+				lastEl.onblur = () => {
+					currentContainer.removeEventListener(
+						"keydown",
+						lastElKeyDown
+					);
+				};
+			}
 		}
 
 		return () => {
@@ -111,6 +121,7 @@ const Modal = ({
 							role='dialog'
 							aria-label={ariaLabel}
 							ref={innerRef}
+							data-testid='modal'
 						>
 							<div className={styles["modal-body"]}>
 								<div
